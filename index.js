@@ -6,9 +6,21 @@ const port = 7777
 
 // db connection
 const db = require('./database')
+const { UserSchema, UserModel } = require('./models/Users.model')
 
 app.get('/', (req, res) => {
-    res.send('Hello World!')
+    // create a new user
+
+    UserSchema.methods.encryptPassword('')
+
+    UserModel.create({
+        name: 'Joe',
+        lastname: 'Corrales',
+        username: 'jcorralesss',
+        email: 'corralesjoe07@gmail.com',
+        password: '123456',
+        salt: '123456',
+    })
 })
 
 // db connection

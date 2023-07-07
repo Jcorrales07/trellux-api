@@ -24,12 +24,24 @@ const UserSchema = new Schema(
             type: String,
             required: true,
         },
-        salt: {
-            type: String,
-            required: true,
-        },
     },
     { timestamps: true }
 )
 
-module.exports = model('User', UserSchema, 'users')
+const bcrypt = require('bcryptjs')
+
+UserSchema.methods.encryptPassword = async (password) => {
+    const salt = await bcrypt.genSalt(25)
+    return await bcrypt.hash(password, salt)
+}
+
+UserSchema.methods.validatePassword = async function (password) {
+    return await bcrypt.compare(password, this.password)
+}
+
+const UserModel = model('User', UserSchema, 'users')
+
+module.exports = {
+    UserSchema,
+    UserModel,
+}
