@@ -1,57 +1,57 @@
 const router = require('express').Router()
 const { UserModel, UserSchema } = require('../models/users.model')
+const { UserService } = require('./../services/users.services')
 
-// user process setup
-const jwt = require('jsonwebtoken')
-const bycrypt = require('bcryptjs')
+const service = new UserService()
 
 // get all users
-router.get('/', (req, res) => {
-    UserModel.find()
-        .then((users) => res.json(users))
-        .catch((err) => res.status(400).json('Error: ' + err))
+router.get('/', async (req, res) => {
+    const users = await service.getAllUsers()
+
+    users.length ? res.json(users) : res.json({ message: 'The DB is empty' })
 })
 
 // get user by username
 router.get('/user-with-username/:username', async (req, res) => {
     const { username } = req.params
 
-    const user = await UserModel.findOne({ username: username })
+    const user = await service.getUserByUsername({ username: username })
 
     user ? res.json(user) : res.json({ message: 'User not found' })
 })
 
 // get user by id
 router.get('/user-with-id/:userId', async (req, res) => {
-    const user = await UserModel.findById(req.params.userId)
-        .then((user) => user)
-        .catch((e) => 'Error: ' + e)
+    const { userId } = req.params
+    const user = await service.getUserById(userId)
 
-    res.json(user)
+    user ? res.json(user) : res.json({ message: 'User not found' })
 })
 
 // register user
 router.post('/register', async (req, res) => {
     const { name, lastname, username, email, password } = req.body
 
-    const uniqueUser = await UserModel.findOne({
-        username: username,
-        email: email,
+    const isUniqueUser = await service.getUserByUsername({
+        username,
+        email,
     })
 
-    if (uniqueUser) {
-        res.json({ existent_user: uniqueUser })
+    if (isUniqueUser) {
+        res.json({ message: 'User already exists', isUniqueUser })
         return
     }
 
-    const userCreated = await UserModel.create({
+    const user = {
         name: name,
         lastname: lastname,
         username: username,
         email: email,
         salt: UserSchema.methods.genSalt(),
         password: UserSchema.methods.encryptPassword(password),
-    })
+    }
+
+    const userCreated = await service.registerUser(user)
 
     res.json(userCreated)
 })
@@ -60,30 +60,13 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     const { username, password } = req.body
 
-    const user = await UserModel.findOne({ username: username }).then((u) => ({
-        _id: u._id,
-        name: u.name,
-        lastname: u.lastname,
-        username: u.username,
-        password: u.password,
-        email: u.email,
-    }))
-
-    if (!bycrypt.compareSync(password, user.password)) {
-        res.json({
-            message: 'User or password incorrect',
-            success: false,
-        })
-        return
-    }
-
-    const accessToken = jwt.sign(JSON.stringify(user), process.env.JWT_SECRET)
+    const { user, accessToken } = await service.loginUser(username, password)
 
     res.json({
         message: 'User logged in successfully',
         success: true,
-        user: user,
-        accessToken: accessToken,
+        user,
+        accessToken,
     })
 })
 
@@ -92,14 +75,14 @@ router.put('/:username', async (req, res) => {
     const { username } = req.params
     const { name, lastname, password } = req.body
 
-    const user = await UserModel.findOne({ username: username })
+    const user = await service.getUserByUsername({ username: username })
 
     if (!user) {
         res.json({ message: 'User not found' })
         return
     }
 
-    const updatedUser = await UserModel.findOneAndUpdate(
+    const updatedUser = await service.updateUser(
         { username: username },
         {
             name: name,
@@ -113,11 +96,33 @@ router.put('/:username', async (req, res) => {
     res.json(updatedUser)
 })
 
-// delete user
-router.delete('/:username', (req, res) => {
+// delete user by username
+router.delete('/user-with-username/:username', (req, res) => {
     const { username } = req.params
 
-    UserModel.findByIdAndDelete({ username: username })
+    service
+        .deleteUserBy({ username })
+        .then(() =>
+            res.status(200).json({
+                message: 'User deleted successfully',
+                success: true,
+            })
+        )
+        .catch((e) =>
+            res.status(400).json({
+                message: `Error deleting user ${e}`,
+                success: false,
+            })
+        )
+})
+
+// delete user by id
+// le falta su funcion en el service, por ahora lo veo innecesario
+router.delete('/user-with-id/:userId', (req, res) => {
+    const { userId } = req.params
+
+    service
+        .deleteUserBy(userId)
         .then(() =>
             res.status(200).json({
                 message: 'User deleted successfully',

@@ -29,6 +29,7 @@ const UserSchema = new Schema(
             type: String,
             required: true,
         },
+        imgUrl: String,
     },
     { timestamps: true }
 )
