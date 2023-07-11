@@ -1,6 +1,5 @@
 const { Schema, model } = require('mongoose')
 
-
 const BoardSchema = new Schema(
     {
         id: {
@@ -22,4 +21,9 @@ const BoardSchema = new Schema(
     { timestamps: true }
 )
 
-module.exports = model('Board', BoardSchema, 'boards')
+const BoardModel = model('Board', BoardSchema, 'boards')
+
+module.exports = {
+    BoardSchema,
+    BoardModel,
+}
