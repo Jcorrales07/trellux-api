@@ -4,6 +4,13 @@ const express = require('express')
 const app = express()
 const port = 7777
 const bodyParser = require('body-parser')
+const cors = require('cors')
+
+const options = {
+    origin: 'http://localhost:5173',
+}
+
+app.use(cors(options))
 app.use(bodyParser.json())
 
 // db connection

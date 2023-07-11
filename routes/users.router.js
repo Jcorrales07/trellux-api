@@ -38,7 +38,11 @@ router.post('/register', async (req, res) => {
     })
 
     if (isUniqueUser) {
-        res.json({ message: 'User already exists', isUniqueUser })
+        res.json({
+            success: false,
+            message: 'User already exists',
+            isUniqueUser,
+        })
         return
     }
 
@@ -53,20 +57,32 @@ router.post('/register', async (req, res) => {
 
     const userCreated = await service.registerUser(user)
 
-    res.json(userCreated)
+    res.json({
+        success: true,
+        message: 'User created successfully',
+        userCreated,
+    })
 })
 
 // login user
 router.post('/login', async (req, res) => {
     const { username, password } = req.body
 
-    const { user, accessToken } = await service.loginUser(username, password)
+    const response = await service.loginUser(username, password)
+
+    if (!response) {
+        res.json({
+            success: false,
+            message: 'Invalid email/username or password',
+        })
+        return
+    }
 
     res.json({
-        message: 'User logged in successfully',
         success: true,
-        user,
-        accessToken,
+        message: 'User logged in successfully',
+        user: response.user,
+        accessToken: response.accessToken,
     })
 })
 

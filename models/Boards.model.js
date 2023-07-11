@@ -1,7 +1,13 @@
 const { Schema, model } = require('mongoose')
 
+
 const BoardSchema = new Schema(
     {
+        id: {
+            type: String,
+            required: true,
+            unique: true,
+        },
         title: {
             type: String,
             required: true,

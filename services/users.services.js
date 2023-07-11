@@ -19,8 +19,14 @@ class UserService {
     }
 
     async getUserByUsername(args) {
-        console.log(args)
-        return await UserModel.findOne(args)
+        console.log('getUserByUsername', args)
+
+        let user = await UserModel.findOne({ username: args.username })
+
+        if (!user) {
+            user = await UserModel.findOne({ email: args.email })
+        }
+        return user
     }
 
     async registerUser(user) {
@@ -28,33 +34,46 @@ class UserService {
     }
 
     async loginUser(username, password) {
-        const user = await this.getUserByUsername({ username }).then((u) => ({
-            _id: u._id,
-            name: u.name,
-            lastname: u.lastname,
-            username: u.username,
-            password: u.password,
-            email: u.email,
-        }))
-
-        const isValidPassword = bcrypt.compareSync(password, user.password)
-
-        if (!isValidPassword) {
-            res.json({
-                message: 'User or password incorrect',
-                success: false,
+        try {
+            let user = await this.getUserByUsername({
+                username,
+                email: username,
             })
-            return
-        }
+                .then((u) => u)
+                .catch((err) => {
+                    console.log('err', err)
+                })
 
-        const accessToken = jwt.sign(
-            JSON.stringify(user),
-            process.env.JWT_SECRET
-        )
+            if (!user) {
+                return null
+            }
 
-        return {
-            accessToken,
-            user,
+            user = {
+                _id: user._id,
+                name: user.name,
+                lastname: user.lastname,
+                username: user.username,
+                email: user.email,
+                password: user.password,
+            }
+
+            const isValidPassword = bcrypt.compareSync(password, user.password)
+
+            if (!isValidPassword) {
+                return null
+            }
+
+            const accessToken = jwt.sign(
+                JSON.stringify(user),
+                process.env.JWT_SECRET
+            )
+
+            return {
+                accessToken,
+                user,
+            }
+        } catch (error) {
+            console.log('error', error)
         }
     }
 
