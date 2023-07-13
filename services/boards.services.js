@@ -6,6 +6,10 @@ class BoardService {
         this.boards = []
     }
 
+    async getBoards() {
+        return await BoardModel.find({})
+    }
+
     async getBoardsFrom({ username }) {
         return await BoardModel.find({ username: username })
     }
@@ -14,9 +18,9 @@ class BoardService {
         return await BoardModel.findOne({ id: id })
     }
 
-    async createBoard({ title, description, username }) {
+    async createBoard({ id, title, description, username }) {
         return await BoardModel.create({
-            id: uuidv4(),
+            id: id,
             title: title,
             description: description,
             username: username,
@@ -24,11 +28,14 @@ class BoardService {
     }
 
     async updateBoard({ id, title, description }) {
-        return await BoardModel.updateOne({id: id}, {title: title, description: description, updatedAt: Date.now()})
+        return await BoardModel.updateOne(
+            { id: id },
+            { title: title, description: description, updatedAt: Date.now() }
+        )
     }
 
     async deleteBoard({ id }) {
-        return await BoardModel.findOneAndRemove({id: id})
+        return await BoardModel.findOneAndRemove({ id: id })
     }
 }
 

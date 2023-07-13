@@ -5,9 +5,10 @@ const boardService = new BoardService()
 
 // create boards
 router.post('/', async (req, res) => {
-    const { title, description, username } = req.body
+    const { id, title, description, username } = req.body
 
     const board = await boardService.createBoard({
+        id,
         title,
         description,
         username,
