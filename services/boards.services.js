@@ -1,5 +1,4 @@
 const { BoardModel } = require('../models/boards.model')
-const { v4: uuidv4 } = require('uuid')
 
 class BoardService {
     constructor() {
@@ -18,24 +17,29 @@ class BoardService {
         return await BoardModel.findOne({ id: id })
     }
 
-    async createBoard({ id, title, description, username }) {
+    async createBoard({ id, title, bgUrl, username }) {
         return await BoardModel.create({
             id: id,
             title: title,
-            description: description,
+            bgUrl: bgUrl,
             username: username,
         })
     }
 
-    async updateBoard({ id, title, description }) {
-        return await BoardModel.updateOne(
+    async updateBoard({ id, title }) {
+        await BoardModel.updateOne(
             { id: id },
-            { title: title, description: description, updatedAt: Date.now() }
+            { $set: { title: title, updatedAt: Date.now() } }
         )
+        return await BoardModel.findOne({ id: id })
     }
 
     async deleteBoard({ id }) {
         return await BoardModel.findOneAndRemove({ id: id })
+    }
+
+    deleteAllBoards() {
+        return BoardModel.deleteMany({})
     }
 }
 

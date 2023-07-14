@@ -5,12 +5,12 @@ const boardService = new BoardService()
 
 // create boards
 router.post('/', async (req, res) => {
-    const { id, title, description, username } = req.body
+    const { id, title, bgUrl, username } = req.body
 
     const board = await boardService.createBoard({
         id,
         title,
-        description,
+        bgUrl,
         username,
     })
 
@@ -72,12 +72,11 @@ router.get('/:boardId', async (req, res) => {
 // update board
 router.put('/:boardId', async (req, res) => {
     const { boardId } = req.params
-    const { title, description } = req.body
+    const { title } = req.body
 
     const board = await boardService.updateBoard({
         id: boardId,
         title,
-        description,
     })
 
     if (!board) {

@@ -11,9 +11,9 @@ const BoardSchema = new Schema(
             type: String,
             required: true,
         },
-        description: String,
+        bgUrl: String,
         username: {
-            type: Schema.Types.String,
+            type: String,
             ref: 'User',
             required: true,
         },
