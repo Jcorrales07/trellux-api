@@ -26,6 +26,8 @@ class UserService {
         if (!user) {
             user = await UserModel.findOne({ email: args.email })
         }
+
+        console.log('user', user)
         return user
     }
 
@@ -55,6 +57,7 @@ class UserService {
                 username: user.username,
                 email: user.email,
                 password: user.password,
+                boardsOrder: user.boardsOrder
             }
 
             const isValidPassword = bcrypt.compareSync(password, user.password)
@@ -63,6 +66,7 @@ class UserService {
                 return null
             }
 
+            // Creacion del JWT
             const accessToken = jwt.sign(
                 JSON.stringify(user),
                 process.env.JWT_SECRET
@@ -72,6 +76,7 @@ class UserService {
                 accessToken,
                 user,
             }
+            
         } catch (error) {
             console.log('error', error)
         }

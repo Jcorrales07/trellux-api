@@ -32,6 +32,8 @@ router.get('/user-with-id/:userId', async (req, res) => {
 router.post('/register', async (req, res) => {
     const { name, lastname, username, email, password } = req.body
 
+    console.log(name, lastname, username, email, password)
+
     const isUniqueUser = await service.getUserByUsername({
         username,
         email,
@@ -53,6 +55,7 @@ router.post('/register', async (req, res) => {
         email: email,
         salt: UserSchema.methods.genSalt(),
         password: UserSchema.methods.encryptPassword(password),
+        boardsOrder: [],
     }
 
     const userCreated = await service.registerUser(user)
@@ -91,7 +94,7 @@ router.post('/login', async (req, res) => {
 // update user
 router.put('/:username', async (req, res) => {
     const { username } = req.params
-    const { name, lastname, password } = req.body
+    const { name, lastname, password, boardsOrder } = req.body
 
     const user = await service.getUserByUsername({ username: username })
 
@@ -107,6 +110,7 @@ router.put('/:username', async (req, res) => {
             lastname: lastname,
             salt: UserSchema.methods.genSalt(),
             password: UserSchema.methods.encryptPassword(password),
+            boardsOrder: boardsOrder,
             updatedAt: Date.now(),
         }
     )

@@ -113,4 +113,17 @@ router.delete('/:boardId', async (req, res) => {
     })
 })
 
+// delete all boards
+router.delete('/', async (req, res) => {
+    
+    const board = await boardService.deleteAllBoards()
+
+    res.json({
+        success: true,
+        message: 'All boards deleted',
+        board
+    })
+
+})
+
 module.exports = router

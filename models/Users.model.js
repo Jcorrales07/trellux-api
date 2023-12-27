@@ -29,7 +29,11 @@ const UserSchema = new Schema(
             type: String,
             required: true,
         },
-        imgUrl: String,
+        boardsOrder: {
+            type: Array,
+            require: true
+        },
+        imgUrl: String, // Para la foto de perfil, pero hasta despues le agregare esto
     },
     { timestamps: true }
 )

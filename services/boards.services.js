@@ -38,8 +38,8 @@ class BoardService {
         return await BoardModel.findOneAndRemove({ id: id })
     }
 
-    deleteAllBoards() {
-        return BoardModel.deleteMany({})
+    async deleteAllBoards() {
+        return await BoardModel.deleteMany({})
     }
 }
 
