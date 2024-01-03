@@ -17,13 +17,8 @@ class BoardService {
         return await BoardModel.findOne({ id: id })
     }
 
-    async createBoard({ id, title, bgUrl, username }) {
-        return await BoardModel.create({
-            id: id,
-            title: title,
-            bgUrl: bgUrl,
-            username: username,
-        })
+    async createBoard(board) {
+        return await BoardModel.create(board)
     }
 
     async updateBoard({ id, title }) {

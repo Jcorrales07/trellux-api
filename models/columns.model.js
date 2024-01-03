@@ -1,8 +1,13 @@
 const { Schema, model } = require('mongoose')
 
-const BoardSchema = new Schema(
+const ColumnSchema = new Schema(
     {
-        id: {
+        kanbanId: {
+            type: String,
+            ref: 'Kanban',
+            required: true,
+        },
+        columnId: {
             type: String,
             required: true,
             unique: true,
@@ -11,21 +16,21 @@ const BoardSchema = new Schema(
             type: String,
             required: true,
         },
-        bgUrl: {
-            type: String,
-        },
         username: {
             type: String,
-            ref: 'User',
+            required: true,
+        },
+        tasksIds: {
+            type: Array,
             required: true,
         },
     },
     { timestamps: true }
 )
 
-const BoardModel = model('Board', BoardSchema, 'boards')
+const ColumnModel = model('Column', ColumnSchema, 'columns')
 
 module.exports = {
-    BoardSchema,
-    BoardModel,
+    ColumnSchema,
+    ColumnModel,
 }

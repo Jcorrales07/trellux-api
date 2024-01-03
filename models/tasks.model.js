@@ -1,31 +1,32 @@
 const { Schema, model } = require('mongoose')
 
-const BoardSchema = new Schema(
+const TaskSchema = new Schema(
     {
-        id: {
+        kanbanId: {
+            type: String,
+            ref: 'Kanban',
+            required: true,
+        },
+        taskId: {
             type: String,
             required: true,
             unique: true,
         },
-        title: {
+        username: {
             type: String,
             required: true,
         },
-        bgUrl: {
+        content: {
             type: String,
-        },
-        username: {
-            type: String,
-            ref: 'User',
             required: true,
         },
     },
     { timestamps: true }
 )
 
-const BoardModel = model('Board', BoardSchema, 'boards')
+const TaskModel = model('Task', TaskSchema, 'tasks') 
 
 module.exports = {
-    BoardSchema,
-    BoardModel,
+    TaskSchema,
+    TaskModel
 }

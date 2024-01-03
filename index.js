@@ -8,6 +8,7 @@ const cors = require('cors')
 
 const options = {
     origin: 'http://localhost:5173',
+    // origin: 'http://localhost:5174',
 }
 
 app.use(cors(options))

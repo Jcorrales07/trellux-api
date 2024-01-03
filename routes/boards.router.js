@@ -7,18 +7,23 @@ const boardService = new BoardService()
 router.post('/', async (req, res) => {
     const { id, title, bgUrl, username } = req.body
 
-    const board = await boardService.createBoard({
-        id,
-        title,
-        bgUrl,
-        username,
-    })
+    console.log('info desde el frontend', id, title, bgUrl, username)
 
-    if (!board) {
+    const board = {
+        id: id,
+        title: title,
+        bgUrl: bgUrl,
+        username: username,
+    }
+
+    const boardCreated = await boardService.createBoard(board)
+
+    if (!boardCreated) {
         res.status(500).json({
             success: false,
             message: 'Board not created',
         })
+        return
     }
 
     res.json({
@@ -123,7 +128,6 @@ router.delete('/', async (req, res) => {
         message: 'All boards deleted',
         board
     })
-
 })
 
 module.exports = router
